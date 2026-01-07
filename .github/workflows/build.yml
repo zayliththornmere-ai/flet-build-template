@@ -5,12 +5,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Поиск файлов
-        run: |
-          echo "Где я нахожусь:"
-          pwd
-          echo "Что лежит в этой папке:"
-          ls -R
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -19,12 +13,15 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Сборка
+      - name: Auto-Build
         run: |
-          # Эта команда попробует найти main.py везде
-          FILE_PATH=$(find . -name "main.py" -print -quit)
-          echo "Файл найден тут: $FILE_PATH"
-          flet build apk --target "$FILE_PATH"
+          # Ищем, где на самом деле лежит main.py
+          REAL_PATH=$(find . -name "main.py" -not -path "*/.*" | head -n 1)
+          echo "Файл найден по адресу: $REAL_PATH"
+          # Создаем папку assets на всякий случай
+          mkdir -p assets
+          # Запускаем сборку
+          flet build apk --target "$REAL_PATH"
       - uses: actions/upload-artifact@v4
         with:
           name: App
