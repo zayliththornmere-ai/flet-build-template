@@ -33,5 +33,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: my-app-release
+          name: my-app-bundle
           path: build/apk/*.apk
