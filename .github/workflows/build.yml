@@ -5,6 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Поиск файлов
+        run: |
+          echo "Где я нахожусь:"
+          pwd
+          echo "Что лежит в этой папке:"
+          ls -R
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -13,10 +19,12 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Build APK
+      - name: Сборка
         run: |
-          mkdir -p assets
-          flet build apk --target main.py
+          # Эта команда попробует найти main.py везде
+          FILE_PATH=$(find . -name "main.py" -print -quit)
+          echo "Файл найден тут: $FILE_PATH"
+          flet build apk --target "$FILE_PATH"
       - uses: actions/upload-artifact@v4
         with:
           name: App
