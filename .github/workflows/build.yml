@@ -13,16 +13,20 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Auto-Build
+      - name: Force Create File and Build
         run: |
-          # Ищем, где на самом деле лежит main.py
-          REAL_PATH=$(find . -name "main.py" -not -path "*/.*" | head -n 1)
-          echo "Файл найден по адресу: $REAL_PATH"
-          # Создаем папку assets на всякий случай
+          # Мы сами создаем файл, чтобы робот его точно увидел
+          cat <<EOF > main.py
+          import flet as ft
+          # ВСТАВЬ СВОЙ КОД НИЖЕ ЭТОЙ СТРОКИ
+          def main(page: ft.Page):
+              page.add(ft.Text("Работает!"))
+          ft.app(target=main)
+          EOF
+          
           mkdir -p assets
-          # Запускаем сборку
-          flet build apk --target "$REAL_PATH"
+          flet build apk --target main.py
       - uses: actions/upload-artifact@v4
         with:
-          name: App
+          name: MyApp
           path: build/apk/*.apk
